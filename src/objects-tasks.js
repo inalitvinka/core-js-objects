@@ -158,9 +158,11 @@ function sellTickets(queue) {
     if (queue[i] === cost) {
       cash += queue[i];
     } else {
-      cash = cash - queue[i] + cost;
+      cash = cash + cost - (queue[i] - cost);
     }
-    if (cash < 0) isSold = false;
+    if (cash < 0) {
+      isSold = false;
+    }
   }
   return isSold;
 }
