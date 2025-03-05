@@ -357,32 +357,77 @@ function group(array, keySelector, valueSelector) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+  index: null,
+  sequence: {
+    element: 1,
+    id: 2,
+    class: 3,
+    attr: 4,
+    pseudoClass: 5,
+    pseudoElement: 6,
+  },
+  staticOrder: [1, 2, 6],
+
+  checkOrder(selector, value) {
+    Object.keys(this.sequence).forEach((item, index) => {
+      if (item === selector) {
+        this.index = index + 1;
+      }
+    });
+    // for (const key of Object.keys(this.sequence)) {
+    //   if (key === selector) {
+    //     this.index = this.sequence[key];
+    //   }
+    // }
+    if (this.order > this.index) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+      );
+    }
+    if (this.order === this.index && this.staticOrder.includes(this.index)) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector'
+      );
+    }
+    const object = Object.create(this);
+    object.selector = this.selector + value;
+    object.order = this.index;
+    return object;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return this.checkOrder('element', `${value}`);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return this.checkOrder('id', `#${value}`);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return this.checkOrder('class', `.${value}`);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return this.checkOrder('attr', `[${value}]`);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return this.checkOrder('pseudoClass', `:${value}`);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return this.checkOrder('pseudoElement', `::${value}`);
+  },
+
+  combine(selector1, combinator, selector2) {
+    const object = Object.create(this);
+    object.selector = `${selector1.selector} ${combinator} ${selector2.selector}`;
+    return object;
+  },
+
+  stringify() {
+    return this.selector;
   },
 };
 
