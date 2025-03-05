@@ -375,11 +375,6 @@ const cssSelectorBuilder = {
         this.index = index + 1;
       }
     });
-    // for (const key of Object.keys(this.sequence)) {
-    //   if (key === selector) {
-    //     this.index = this.sequence[key];
-    //   }
-    // }
     if (this.order > this.index) {
       throw new Error(
         'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
